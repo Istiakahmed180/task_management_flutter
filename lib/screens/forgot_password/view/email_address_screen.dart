@@ -1,18 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:task_management/common/widgets/app_background.dart';
 import 'package:task_management/constants/app_colors.dart';
-import 'package:task_management/screens/forgot_password/controller/forgot_password_controller.dart';
 
 class EmailAddressScreen extends StatelessWidget {
   const EmailAddressScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ForgotPasswordEmailAddressController
-        forgotPasswordEmailAddressController =
-        Get.put(ForgotPasswordEmailAddressController());
     TextTheme textTheme = Theme.of(context).textTheme;
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -36,14 +31,12 @@ class EmailAddressScreen extends StatelessWidget {
                   style: textTheme.titleSmall,
                 ),
                 const SizedBox(height: 24),
-                _buildEmailAddressForm(
-                    context, formKey, forgotPasswordEmailAddressController),
+                _buildEmailAddressForm(context, formKey),
                 const SizedBox(height: 40),
                 Center(
                   child: Column(
                     children: [
-                      _buildSignInSection(
-                          context, forgotPasswordEmailAddressController),
+                      _buildSignInSection(context),
                     ],
                   ),
                 )
@@ -56,8 +49,9 @@ class EmailAddressScreen extends StatelessWidget {
   }
 }
 
-RichText _buildSignInSection(context,
-    ForgotPasswordEmailAddressController forgotPasswordEmailAddressController) {
+RichText _buildSignInSection(
+  context,
+) {
   return RichText(
     text: TextSpan(
       style: const TextStyle(
@@ -70,22 +64,22 @@ RichText _buildSignInSection(context,
         TextSpan(
             text: 'Sign In',
             style: const TextStyle(color: AppColors.colorGreen),
-            recognizer: TapGestureRecognizer()
-              ..onTap =
-                  () => forgotPasswordEmailAddressController.goToSignIn()),
+            recognizer: TapGestureRecognizer()..onTap = () {}),
       ],
     ),
   );
 }
 
-Form _buildEmailAddressForm(context, GlobalKey<FormState> formKey,
-    ForgotPasswordEmailAddressController forgotPasswordEmailAddressController) {
+Form _buildEmailAddressForm(
+  context,
+  GlobalKey<FormState> formKey,
+) {
   return Form(
     key: formKey,
     child: Column(
       children: [
         TextFormField(
-            controller: forgotPasswordEmailAddressController.emailController,
+            controller: TextEditingController(),
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(hintText: "Email"),
             validator: (value) {
@@ -95,20 +89,11 @@ Form _buildEmailAddressForm(context, GlobalKey<FormState> formKey,
               return null;
             }),
         const SizedBox(height: 20),
-        Obx(
-          () => Visibility(
-            visible: !forgotPasswordEmailAddressController.isProgress.value,
-            replacement: const CircularProgressIndicator(
-              backgroundColor: AppColors.colorGreen,
-            ),
-            child: ElevatedButton(
-              onPressed: () => forgotPasswordEmailAddressController
-                  .emailAddressVerification(formKey: formKey),
-              child: const Icon(
-                Icons.arrow_circle_right_outlined,
-                size: 30,
-              ),
-            ),
+        ElevatedButton(
+          onPressed: () {},
+          child: const Icon(
+            Icons.arrow_circle_right_outlined,
+            size: 30,
           ),
         ),
       ],

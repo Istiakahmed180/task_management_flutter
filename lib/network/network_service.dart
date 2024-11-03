@@ -17,8 +17,8 @@ class NetworkService {
     return prefs.getString("token");
   }
 
-  // Post Request Headers
-  static Map<String, String> _postRequestHeaders(String? token) {
+  // Request Headers
+  static Map<String, String> _requestHeaders(String? token) {
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -31,21 +31,12 @@ class NetworkService {
     return headers;
   }
 
-  // Get Request Headers
-  static Map<String, String> _getRequestHeaders(String? token) {
-    final headers = <String, String>{};
-    if (token != null) {
-      headers['token'] = token;
-    }
-    return headers;
-  }
-
   // Get API Network Service
   static Future<NetworkResponse> getRequest({required String url}) async {
     final String? token = await _getToken();
     try {
       Uri uri = Uri.parse(url);
-      final response = await get(uri, headers: _getRequestHeaders(token))
+      final response = await get(uri, headers: _requestHeaders(token))
           .timeout(timeoutDuration);
       return _handleResponse(url, response, token);
     } catch (e) {
@@ -64,7 +55,7 @@ class NetworkService {
       debugPrint("Request Body: ${jsonEncode(requestBody)}");
       final response = await post(
         uri,
-        headers: _postRequestHeaders(token),
+        headers: _requestHeaders(token),
         body: jsonEncode(requestBody),
       ).timeout(timeoutDuration);
       return _handleResponse(url, response, token);

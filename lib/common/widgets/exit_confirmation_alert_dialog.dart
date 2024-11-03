@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:task_management/constants/app_colors.dart';
 
 class ExitConfirmationAlertDialog extends StatelessWidget {
@@ -32,7 +31,7 @@ class ExitConfirmationAlertDialog extends StatelessWidget {
       content: Text(content),
       actions: [
         TextButton(
-          onPressed: () => Get.back(),
+          onPressed: () {},
           child: Text(
             cancelText,
             style: const TextStyle(color: AppColors.colorGreen),

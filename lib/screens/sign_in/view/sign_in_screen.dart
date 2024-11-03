@@ -1,10 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:task_management/common/widgets/app_background.dart';
 import 'package:task_management/common/widgets/exit_confirmation_alert_dialog.dart';
 import 'package:task_management/constants/app_colors.dart';
-import 'package:task_management/screens/sign_in/controller/sign_in_controller.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -14,7 +12,6 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final SignInController signInController = Get.put(SignInController());
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -45,7 +42,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     children: [
                       TextButton(
-                        onPressed: () => signInController.goToForgotPassword(),
+                        onPressed: () {},
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(color: Colors.grey),
@@ -76,8 +73,7 @@ class _SignInScreenState extends State<SignInScreen> {
           TextSpan(
               text: 'Sign Up',
               style: const TextStyle(color: AppColors.colorGreen),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () => signInController.goToSignUp()),
+              recognizer: TapGestureRecognizer()..onTap = () {}),
         ],
       ),
     );
@@ -89,7 +85,7 @@ class _SignInScreenState extends State<SignInScreen> {
       child: Column(
         children: [
           TextFormField(
-              controller: signInController.emailController,
+              controller: TextEditingController(),
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(hintText: "Email"),
               validator: (value) {
@@ -100,7 +96,7 @@ class _SignInScreenState extends State<SignInScreen> {
               }),
           const SizedBox(height: 20),
           TextFormField(
-              controller: signInController.passwordController,
+              controller: TextEditingController(),
               obscureText: true,
               decoration: const InputDecoration(hintText: "Password"),
               validator: (value) {
@@ -110,19 +106,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 return null;
               }),
           const SizedBox(height: 20),
-          Obx(
-            () => Visibility(
-              visible: !signInController.isProgress.value,
-              replacement: const CircularProgressIndicator(
-                backgroundColor: AppColors.colorGreen,
-              ),
-              child: ElevatedButton(
-                onPressed: () => signInController.signIn(formKey: formKey),
-                child: const Icon(
-                  Icons.arrow_circle_right_outlined,
-                  size: 30,
-                ),
-              ),
+          ElevatedButton(
+            onPressed: () {},
+            child: const Icon(
+              Icons.arrow_circle_right_outlined,
+              size: 30,
             ),
           ),
         ],

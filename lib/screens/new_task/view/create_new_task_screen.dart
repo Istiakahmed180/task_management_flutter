@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:task_management/common/widgets/app_background.dart';
 import 'package:task_management/common/widgets/common_app_bar.dart';
-import 'package:task_management/constants/app_colors.dart';
-import 'package:task_management/screens/new_task/controller/new_task_controller.dart';
 
 class CreateNewTaskScreen extends StatefulWidget {
   const CreateNewTaskScreen({super.key});
@@ -14,8 +11,6 @@ class CreateNewTaskScreen extends StatefulWidget {
 
 class _CreateNewTaskScreenState extends State<CreateNewTaskScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final CreateNewTaskController createNewTaskController =
-      Get.put(CreateNewTaskController());
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +33,7 @@ class _CreateNewTaskScreenState extends State<CreateNewTaskScreen> {
                     textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
-              _buildNewTaskForm(context, createNewTaskController, formKey),
+              _buildNewTaskForm(context, formKey),
               Padding(
                   padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).viewInsets.bottom))
@@ -49,16 +44,13 @@ class _CreateNewTaskScreenState extends State<CreateNewTaskScreen> {
     );
   }
 
-  Form _buildNewTaskForm(
-      context,
-      CreateNewTaskController createNewTaskController,
-      GlobalKey<FormState> formKey) {
+  Form _buildNewTaskForm(context, GlobalKey<FormState> formKey) {
     return Form(
       key: formKey,
       child: Column(
         children: [
           TextFormField(
-            controller: createNewTaskController.titleController,
+            controller: TextEditingController(),
             keyboardType: TextInputType.text,
             decoration: const InputDecoration(hintText: "Title"),
             validator: (value) {
@@ -70,7 +62,7 @@ class _CreateNewTaskScreenState extends State<CreateNewTaskScreen> {
           ),
           const SizedBox(height: 20),
           TextFormField(
-            controller: createNewTaskController.descriptionController,
+            controller: TextEditingController(),
             maxLines: 5,
             keyboardType: TextInputType.text,
             decoration: const InputDecoration(
@@ -86,20 +78,11 @@ class _CreateNewTaskScreenState extends State<CreateNewTaskScreen> {
             },
           ),
           const SizedBox(height: 20),
-          Obx(
-            () => Visibility(
-              visible: !createNewTaskController.isProgress.value,
-              replacement: const CircularProgressIndicator(
-                backgroundColor: AppColors.colorGreen,
-              ),
-              child: ElevatedButton(
-                onPressed: () => createNewTaskController.createNewTask(
-                    formKey: formKey, status: "New"),
-                child: const Icon(
-                  Icons.arrow_circle_right_outlined,
-                  size: 30,
-                ),
-              ),
+          ElevatedButton(
+            onPressed: () {},
+            child: const Icon(
+              Icons.arrow_circle_right_outlined,
+              size: 30,
             ),
           ),
         ],

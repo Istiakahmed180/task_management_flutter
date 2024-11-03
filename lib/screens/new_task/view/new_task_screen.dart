@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:task_management/common/logic/list_task_by_status_controller.dart';
 import 'package:task_management/common/widgets/app_background.dart';
 import 'package:task_management/constants/app_colors.dart';
-import 'package:task_management/screens/new_task/controller/new_task_controller.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
@@ -14,14 +10,9 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
-  final NewTaskController newTaskController = Get.put(NewTaskController());
-  final ListTaskByStatusController listTaskByStatusController =
-      Get.put(ListTaskByStatusController());
-
   @override
   void initState() {
     super.initState();
-    listTaskByStatusController.getTaskByStatus(status: "New");
   }
 
   @override
@@ -30,136 +21,115 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
     return Scaffold(
       body: AppBackground(
-          child: Obx(
-        () => listTaskByStatusController.isProgress.value
-            ? const Center(
-                child: CircularProgressIndicator(
-                  backgroundColor: AppColors.colorGreen,
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    _buildProgressHeaderSection(textTheme),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    _buildTaskListSection(textTheme)
-                  ],
-                ),
-              ),
+          child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            _buildProgressHeaderSection(textTheme),
+            const SizedBox(
+              height: 10,
+            ),
+            _buildTaskListSection(textTheme)
+          ],
+        ),
       )),
-      floatingActionButton:
-          BuildCreateNewTaskFlotButton(newTaskController: newTaskController),
+      floatingActionButton: const BuildCreateNewTaskFlotButton(),
     );
   }
 
   Expanded _buildTaskListSection(TextTheme textTheme) {
     return Expanded(
-      child: listTaskByStatusController.taskList.isEmpty
-          ? Center(
-              child: Text(
-                "Data Not Found",
-                style: textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.colorLightGray),
-              ),
-            )
-          : ListView.separated(
-              itemBuilder: (context, index) {
-                final task = listTaskByStatusController.taskList[index];
-                final DateTime dateTime = DateTime.parse(task["createdDate"]);
-                final String formattedDate =
-                    DateFormat("dd-MMM-yyyy").format(dateTime);
-                return Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  color: AppColors.colorWhite,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView.separated(
+          itemBuilder: (context, index) {
+            return Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              color: AppColors.colorWhite,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      // "${task["title"].isNotEmpty ? task["title"] : "N/A"}",
+                      "",
+                      style: textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      // "${task["description"].isNotEmpty ? task["description"] : "N/A"}",
+                      "",
+                      style: textTheme.titleSmall?.copyWith(
+                          color: AppColors.colorLightGray,
+                          fontSize: 12,
+                          fontWeight: FontWeight.normal),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      // "Date : $formattedDate",
+                      "",
+                      style: textTheme.titleSmall?.copyWith(
+                          color: AppColors.colorDarkBlue,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "${task["title"].isNotEmpty ? task["title"] : "N/A"}",
-                          style: textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          "${task["description"].isNotEmpty ? task["description"] : "N/A"}",
-                          style: textTheme.titleSmall?.copyWith(
-                              color: AppColors.colorLightGray,
-                              fontSize: 12,
-                              fontWeight: FontWeight.normal),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "Date : $formattedDate",
-                          style: textTheme.titleSmall?.copyWith(
-                              color: AppColors.colorDarkBlue,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(
-                          height: 5,
+                        SizedBox(
+                          width: 100,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.colorBlue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                            onPressed: () {},
+                            child: const Text(
+                              // "${task["status"].isNotEmpty ? task["status"] : "N/A"}",
+                              "",
+                            ),
+                          ),
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            SizedBox(
-                              width: 100,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.colorBlue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  visualDensity: VisualDensity.compact,
-                                ),
+                            IconButton(
                                 onPressed: () {},
-                                child: Text(
-                                  "${task["status"].isNotEmpty ? task["status"] : "N/A"}",
-                                ),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                IconButton(
-                                    onPressed: () {},
-                                    icon: const Icon(
-                                      Icons.edit_off_outlined,
-                                      color: AppColors.colorGreen,
-                                    )),
-                                IconButton(
-                                    onPressed: () => listTaskByStatusController
-                                        .deleteTaskByID(
-                                            taskId: task["_id"].toString(),
-                                            status: "New"),
-                                    icon: const Icon(
-                                      Icons.delete_forever_sharp,
-                                      color: AppColors.colorRed,
-                                    ))
-                              ],
-                            )
+                                icon: const Icon(
+                                  Icons.edit_off_outlined,
+                                  color: AppColors.colorGreen,
+                                )),
+                            IconButton(
+                                onPressed: () {},
+                                icon: const Icon(
+                                  Icons.delete_forever_sharp,
+                                  color: AppColors.colorRed,
+                                ))
                           ],
                         )
                       ],
-                    ),
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(
-                  height: 10,
-                );
-              },
-              itemCount: listTaskByStatusController.taskList.length),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+          separatorBuilder: (context, index) {
+            return const SizedBox(
+              height: 10,
+            );
+          },
+          itemCount: 10),
     );
   }
 
@@ -232,16 +202,13 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 class BuildCreateNewTaskFlotButton extends StatelessWidget {
   const BuildCreateNewTaskFlotButton({
     super.key,
-    required this.newTaskController,
   });
-
-  final NewTaskController newTaskController;
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-      onPressed: () => newTaskController.goToCreateNewTask(),
+      onPressed: () {},
       backgroundColor: AppColors.colorGreen,
       child: const Icon(
         Icons.add,
