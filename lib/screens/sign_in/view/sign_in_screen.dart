@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_management/common/widgets/app_background.dart';
 import 'package:task_management/common/widgets/exit_confirmation_alert_dialog.dart';
+import 'package:task_management/config/routes/routes.dart';
 import 'package:task_management/constants/app_colors.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -42,7 +43,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     children: [
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () =>
+                            Navigator.pushNamed(context, Routes.emailAddress),
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(color: Colors.grey),
@@ -73,7 +75,8 @@ class _SignInScreenState extends State<SignInScreen> {
           TextSpan(
               text: 'Sign Up',
               style: const TextStyle(color: AppColors.colorGreen),
-              recognizer: TapGestureRecognizer()..onTap = () {}),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => Navigator.pushNamed(context, Routes.signUp)),
         ],
       ),
     );
@@ -107,7 +110,7 @@ class _SignInScreenState extends State<SignInScreen> {
               }),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () => Navigator.pushNamed(context, Routes.home),
             child: const Icon(
               Icons.arrow_circle_right_outlined,
               size: 30,

@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:task_management/common/widgets/app_background.dart';
+import 'package:task_management/config/routes/routes.dart';
 import 'package:task_management/constants/app_colors.dart';
 
 class PinVerificationScreen extends StatefulWidget {
@@ -73,7 +74,7 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
           onChanged: (value) {},
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () => Navigator.pushNamed(context, Routes.setPassword),
           child: const Text(
             "Verify",
           ),
@@ -95,7 +96,12 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
           TextSpan(
               text: 'Sign In',
               style: const TextStyle(color: AppColors.colorGreen),
-              recognizer: TapGestureRecognizer()..onTap = () {}),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      Routes.signIn,
+                      (route) => false,
+                    )),
         ],
       ),
     );

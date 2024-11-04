@@ -31,7 +31,7 @@ class ExitConfirmationAlertDialog extends StatelessWidget {
       content: Text(content),
       actions: [
         TextButton(
-          onPressed: () {},
+          onPressed: () => Navigator.pop(context),
           child: Text(
             cancelText,
             style: const TextStyle(color: AppColors.colorGreen),

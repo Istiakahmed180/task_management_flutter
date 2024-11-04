@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_management/common/widgets/app_background.dart';
+import 'package:task_management/config/routes/routes.dart';
 import 'package:task_management/constants/app_colors.dart';
 
 class EmailAddressScreen extends StatelessWidget {
@@ -64,7 +65,12 @@ RichText _buildSignInSection(
         TextSpan(
             text: 'Sign In',
             style: const TextStyle(color: AppColors.colorGreen),
-            recognizer: TapGestureRecognizer()..onTap = () {}),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    Routes.signIn,
+                    (route) => false,
+                  )),
       ],
     ),
   );
@@ -90,7 +96,7 @@ Form _buildEmailAddressForm(
             }),
         const SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () => Navigator.pushNamed(context, Routes.pinVerification),
           child: const Icon(
             Icons.arrow_circle_right_outlined,
             size: 30,
