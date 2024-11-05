@@ -1,8 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:task_management/common/widgets/app_background.dart';
 import 'package:task_management/config/routes/routes.dart';
+import 'package:task_management/constants/api_path.dart';
 import 'package:task_management/constants/app_colors.dart';
+import 'package:task_management/network/network_response.dart';
+import 'package:task_management/network/network_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,6 +17,38 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final String emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+  final String phonePattern = r'^01\d{9}$';
+  final String passwordPattern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$';
+  bool isSignUp = false;
+  bool isProgress = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_validateForm);
+    _firstNameController.addListener(_validateForm);
+    _lastNameController.addListener(_validateForm);
+    _phoneNumberController.addListener(_validateForm);
+    _passwordController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    setState(() {
+      isSignUp = formKey.currentState?.validate() ?? false;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    disposeTextFields();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +73,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     style: textTheme.displaySmall,
                   ),
                   const SizedBox(height: 24),
-                  _buildSignUpForm(
-                    context,
-                  ),
+                  _buildSignUpForm(context),
                   const SizedBox(height: 40),
                   Center(
                     child: Column(
                       children: [
-                        _buildSignInSection(
-                          context,
-                        ),
+                        _buildSignInSection(context),
                       ],
                     ),
                   ),
@@ -59,7 +91,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  RichText _buildSignInSection(context) {
+  Widget _buildSignInSection(BuildContext context) {
     return RichText(
       text: TextSpan(
         style: const TextStyle(
@@ -67,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             fontWeight: FontWeight.w600,
             fontSize: 14,
             letterSpacing: 0.5),
-        text: "Have account? ",
+        text: "Have an account? ",
         children: [
           TextSpan(
               text: 'Sign In',
@@ -83,27 +115,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildSignUpForm(
-    context,
-  ) {
+  Widget _buildSignUpForm(BuildContext context) {
     return Form(
       key: formKey,
       child: Column(
         children: [
           TextFormField(
-            controller: TextEditingController(),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(hintText: "Email"),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Please enter email address";
+              } else if (!RegExp(emailPattern).hasMatch(value)) {
+                return "Invalid email format";
               }
               return null;
             },
           ),
           const SizedBox(height: 20),
           TextFormField(
-            controller: TextEditingController(),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: _firstNameController,
             keyboardType: TextInputType.text,
             decoration: const InputDecoration(hintText: "First Name"),
             validator: (value) {
@@ -115,7 +149,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           const SizedBox(height: 20),
           TextFormField(
-            controller: TextEditingController(),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: _lastNameController,
             keyboardType: TextInputType.text,
             decoration: const InputDecoration(hintText: "Last Name"),
             validator: (value) {
@@ -127,38 +162,103 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           const SizedBox(height: 20),
           TextFormField(
-            controller: TextEditingController(),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: _phoneNumberController,
             keyboardType: TextInputType.phone,
             decoration: const InputDecoration(hintText: "Mobile"),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Please enter mobile number";
+              } else if (!RegExp(phonePattern).hasMatch(value)) {
+                return "Invalid phone number format";
               }
               return null;
             },
           ),
           const SizedBox(height: 20),
           TextFormField(
-            controller: TextEditingController(),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: _passwordController,
             obscureText: true,
             decoration: const InputDecoration(hintText: "Password"),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Please enter password";
+              } else if (!RegExp(passwordPattern).hasMatch(value)) {
+                return "At least 8 characters and both letters and numbers";
               }
               return null;
             },
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {},
-            child: const Icon(
-              Icons.arrow_circle_right_outlined,
-              size: 30,
-            ),
+            onPressed: isSignUp ? signUp : null,
+            child: isProgress
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: AppColors.colorWhite,
+                    ),
+                  )
+                : const Icon(
+                    Icons.arrow_circle_right_outlined,
+                    size: 30,
+                  ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> signUp() async {
+    if (formKey.currentState!.validate()) {
+      isProgress = true;
+      setState(() {});
+      final email = _emailController.text.trim();
+      final firstName = _firstNameController.text.trim();
+      final lastName = _lastNameController.text.trim();
+      final phoneNumber = _phoneNumberController.text.trim();
+      final password = _passwordController.text;
+
+      final Map<String, String> requestBody = {
+        "email": email,
+        "firstName": firstName,
+        "lastName": lastName,
+        "mobile": phoneNumber,
+        "password": password,
+      };
+
+      final NetworkResponse response = await NetworkService.postRequest(
+          url: ApiPath.registration, requestBody: requestBody);
+      isProgress = false;
+      setState(() {});
+      if (response.isSuccess) {
+        Navigator.pushReplacementNamed(context, Routes.signIn);
+        clearTextFields();
+        Fluttertoast.showToast(
+            msg: "Registration Complete",
+            backgroundColor: AppColors.colorGreen);
+      } else {
+        Fluttertoast.showToast(
+            msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+      }
+    }
+  }
+
+  void disposeTextFields() {
+    _emailController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _phoneNumberController.dispose();
+    _passwordController.dispose();
+  }
+
+  void clearTextFields() {
+    _emailController.clear();
+    _firstNameController.clear();
+    _lastNameController.clear();
+    _phoneNumberController.clear();
+    _passwordController.clear();
   }
 }
