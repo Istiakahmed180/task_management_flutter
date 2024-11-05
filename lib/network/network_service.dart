@@ -69,43 +69,19 @@ class NetworkService {
       String url, Response response, String? token) {
     printResponse(url, response, token);
 
-    if (response.statusCode >= 200 && response.statusCode <= 400) {
-      try {
-        final jsonResponse = jsonDecode(response.body);
-        final status = jsonResponse["status"];
-
-        if (status == "success") {
-          return NetworkResponse(
-            isSuccess: true,
-            statusCode: response.statusCode,
-            requestResponse: jsonResponse,
-          );
-        } else if (status == "fail") {
-          return NetworkResponse(
-            isSuccess: false,
-            statusCode: response.statusCode,
-            errorMessage: jsonResponse["data"] ?? "An error occurred",
-          );
-        } else {
-          return NetworkResponse(
-            isSuccess: false,
-            statusCode: response.statusCode,
-            errorMessage: "Unexpected status value: $status",
-          );
-        }
-      } catch (e) {
-        return NetworkResponse(
-          isSuccess: false,
-          statusCode: response.statusCode,
-          errorMessage: "Invalid JSON format",
-        );
-      }
+    final jsonResponse = jsonDecode(response.body);
+    final status = jsonResponse["status"];
+    if (status == "success") {
+      return NetworkResponse(
+        isSuccess: true,
+        statusCode: response.statusCode,
+        requestResponse: jsonResponse,
+      );
     } else {
       return NetworkResponse(
-        isSuccess: false,
-        statusCode: response.statusCode,
-        errorMessage: "Request failed with status: ${response.statusCode}",
-      );
+          isSuccess: false,
+          statusCode: response.statusCode,
+          errorMessage: jsonResponse["data"]);
     }
   }
 

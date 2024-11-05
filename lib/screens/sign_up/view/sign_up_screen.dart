@@ -5,6 +5,7 @@ import 'package:task_management/common/widgets/app_background.dart';
 import 'package:task_management/config/routes/routes.dart';
 import 'package:task_management/constants/api_path.dart';
 import 'package:task_management/constants/app_colors.dart';
+import 'package:task_management/constants/app_strings.dart';
 import 'package:task_management/network/network_response.dart';
 import 'package:task_management/network/network_service.dart';
 
@@ -22,9 +23,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _lastNameController = TextEditingController();
   final _phoneNumberController = TextEditingController();
   final _passwordController = TextEditingController();
-  final String emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-  final String phonePattern = r'^01\d{9}$';
-  final String passwordPattern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$';
   bool isSignUp = false;
   bool isProgress = false;
 
@@ -128,7 +126,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Please enter email address";
-              } else if (!RegExp(emailPattern).hasMatch(value)) {
+              } else if (!RegExp(RegularExpression.email).hasMatch(value)) {
                 return "Invalid email format";
               }
               return null;
@@ -169,7 +167,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Please enter mobile number";
-              } else if (!RegExp(phonePattern).hasMatch(value)) {
+              } else if (!RegExp(RegularExpression.phone).hasMatch(value)) {
                 return "Invalid phone number format";
               }
               return null;
@@ -184,7 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Please enter password";
-              } else if (!RegExp(passwordPattern).hasMatch(value)) {
+              } else if (!RegExp(RegularExpression.password).hasMatch(value)) {
                 return "At least 8 characters and both letters and numbers";
               }
               return null;

@@ -1,9 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:task_management/common/auth_controller.dart';
 import 'package:task_management/common/widgets/app_background.dart';
 import 'package:task_management/common/widgets/exit_confirmation_alert_dialog.dart';
 import 'package:task_management/config/routes/routes.dart';
+import 'package:task_management/constants/api_path.dart';
 import 'package:task_management/constants/app_colors.dart';
+import 'package:task_management/constants/app_strings.dart';
+import 'package:task_management/network/network_response.dart';
+import 'package:task_management/network/network_service.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -13,7 +19,35 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final AuthController _authController = AuthController();
   final formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool isSignIn = false;
+  bool isProgress = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_validateForm);
+    _passwordController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    setState(() {
+      isSignIn = formKey.currentState?.validate() ?? false;
+    });
+  }
+
+  void disposeTextFields() {
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
+
+  void clearTextFields() {
+    _emailController.clear();
+    _passwordController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,33 +122,48 @@ class _SignInScreenState extends State<SignInScreen> {
       child: Column(
         children: [
           TextFormField(
-              controller: TextEditingController(),
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(hintText: "Email"),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Please enter email address";
+                } else if (!RegExp(RegularExpression.email).hasMatch(value)) {
+                  return "Invalid email format";
                 }
                 return null;
               }),
           const SizedBox(height: 20),
           TextFormField(
-              controller: TextEditingController(),
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: _passwordController,
               obscureText: true,
               decoration: const InputDecoration(hintText: "Password"),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Please enter password";
+                } else if (!RegExp(RegularExpression.password)
+                    .hasMatch(value)) {
+                  return "At least 8 characters and both letters and numbers";
                 }
                 return null;
               }),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, Routes.home),
-            child: const Icon(
-              Icons.arrow_circle_right_outlined,
-              size: 30,
-            ),
+            onPressed: isSignIn ? signIn : null,
+            child: isProgress
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: AppColors.colorWhite,
+                    ),
+                  )
+                : const Icon(
+                    Icons.arrow_circle_right_outlined,
+                    size: 30,
+                  ),
           ),
         ],
       ),
@@ -126,5 +175,35 @@ class _SignInScreenState extends State<SignInScreen> {
       context: context,
       builder: (context) => const ExitConfirmationAlertDialog(),
     ).then((value) => value ?? false);
+  }
+
+  Future<void> signIn() async {
+    if (formKey.currentState!.validate()) {
+      isProgress = true;
+      setState(() {});
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      final Map<String, String> requestBody = {
+        "email": email,
+        "password": password
+      };
+
+      final NetworkResponse response = await NetworkService.postRequest(
+          url: ApiPath.login, requestBody: requestBody);
+      isProgress = false;
+      setState(() {});
+      if (response.isSuccess) {
+        await _authController
+            .saveAccessToken(response.requestResponse["token"]);
+        Navigator.pushNamed(context, Routes.home);
+        clearTextFields();
+        Fluttertoast.showToast(
+            msg: "Login Complete", backgroundColor: AppColors.colorGreen);
+      } else {
+        Fluttertoast.showToast(
+            msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+      }
+    }
   }
 }

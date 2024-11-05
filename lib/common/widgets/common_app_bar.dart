@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:task_management/common/auth_controller.dart';
 import 'package:task_management/common/widgets/exit_confirmation_alert_dialog.dart';
+import 'package:task_management/config/routes/routes.dart';
 import 'package:task_management/constants/app_colors.dart';
 import 'package:task_management/constants/assets_path.dart';
 
@@ -14,10 +16,7 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CommonAppBarState extends State<CommonAppBar> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  final AuthController _authController = AuthController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +65,14 @@ class _CommonAppBarState extends State<CommonAppBar> {
       builder: (context) => ExitConfirmationAlertDialog(
         title: "Logout Application?",
         content: "Are you sure you want to logout of the application?",
-        actionYes: () {},
+        actionYes: () {
+          _authController.clearSharedPreferenceData();
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            Routes.signIn,
+            (route) => false,
+          );
+        },
       ),
     ).then((value) => value ?? false);
   }
