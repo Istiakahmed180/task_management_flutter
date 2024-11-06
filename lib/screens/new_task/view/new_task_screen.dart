@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_management/common/widgets/app_background.dart';
+import 'package:task_management/config/routes/routes.dart';
 import 'package:task_management/constants/app_colors.dart';
 
 class NewTaskScreen extends StatefulWidget {
@@ -208,7 +209,7 @@ class BuildCreateNewTaskFlotButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-      onPressed: () {},
+      onPressed: () => Navigator.pushNamed(context, Routes.createNewTask),
       backgroundColor: AppColors.colorGreen,
       child: const Icon(
         Icons.add,

@@ -228,7 +228,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       };
 
       final NetworkResponse response = await NetworkService.postRequest(
-          url: ApiPath.registration, requestBody: requestBody);
+          context: context,
+          url: ApiPath.registration,
+          requestBody: requestBody);
       isProgress = false;
       setState(() {});
       if (response.isSuccess) {

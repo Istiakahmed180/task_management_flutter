@@ -190,7 +190,7 @@ class _SignInScreenState extends State<SignInScreen> {
       };
 
       final NetworkResponse response = await NetworkService.postRequest(
-          url: ApiPath.login, requestBody: requestBody);
+          context: context, url: ApiPath.login, requestBody: requestBody);
       isProgress = false;
       setState(() {});
       if (response.isSuccess) {
