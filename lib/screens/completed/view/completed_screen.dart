@@ -1,14 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:task_management/common/widgets/app_background.dart';
+import 'package:task_management/common/widgets/common_task_card.dart';
+import 'package:task_management/common/widgets/not_found.dart';
+import 'package:task_management/constants/api_path.dart';
+import 'package:task_management/constants/app_colors.dart';
+import 'package:task_management/network/network_response.dart';
+import 'package:task_management/network/network_service.dart';
+import 'package:task_management/screens/new_task/model/new_task_model.dart';
 
-class CompletedScreen extends StatelessWidget {
+class CompletedScreen extends StatefulWidget {
   const CompletedScreen({super.key});
 
   @override
+  State<CompletedScreen> createState() => _CompletedScreenState();
+}
+
+class _CompletedScreenState extends State<CompletedScreen> {
+  List<TaskData> _completedTaskList = [];
+  bool _isCompletedTaskListProgress = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCompletedTaskList();
+  }
+
+  Future<void> _getCompletedTaskList() async {
+    _isCompletedTaskListProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkService.getRequest(
+        context: context, url: ApiPath.completeTaskList);
+    if (response.isSuccess) {
+      final TaskModel completedTaskModel =
+          TaskModel.fromJson(response.requestResponse);
+      _completedTaskList.clear();
+      _completedTaskList = completedTaskModel.data ?? [];
+      _isCompletedTaskListProgress = false;
+      setState(() {});
+    } else {
+      Fluttertoast.showToast(
+          msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const AppBackground(
-        child: Center(
-      child: Text("Completed Screen"),
+    TextTheme textTheme = Theme.of(context).textTheme;
+
+    return AppBackground(
+        child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Visibility(
+        visible: !_isCompletedTaskListProgress,
+        replacement: const Center(
+          child: CircularProgressIndicator(
+            backgroundColor: AppColors.colorGreen,
+          ),
+        ),
+        child: _completedTaskList.isEmpty
+            ? const NotFound(title: "Completed Task List Not Found")
+            : CommonTaskCard(
+                taskList: _completedTaskList, textTheme: textTheme),
+      ),
     ));
   }
 }

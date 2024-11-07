@@ -1,21 +1,21 @@
-class NewTaskModel {
+class TaskModel {
   String? status;
-  List<NewTaskData>? data;
+  List<TaskData>? data;
 
-  NewTaskModel({this.status, this.data});
+  TaskModel({this.status, this.data});
 
-  NewTaskModel.fromJson(Map<String, dynamic> json) {
+  TaskModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     if (json['data'] != null) {
-      data = <NewTaskData>[];
+      data = <TaskData>[];
       json['data'].forEach((v) {
-        data!.add(NewTaskData.fromJson(v));
+        data!.add(TaskData.fromJson(v));
       });
     }
   }
 }
 
-class NewTaskData {
+class TaskData {
   String? sId;
   String? title;
   String? description;
@@ -23,7 +23,7 @@ class NewTaskData {
   String? email;
   String? createdDate;
 
-  NewTaskData(
+  TaskData(
       {this.sId,
       this.title,
       this.description,
@@ -31,7 +31,7 @@ class NewTaskData {
       this.email,
       this.createdDate});
 
-  NewTaskData.fromJson(Map<String, dynamic> json) {
+  TaskData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     title = json['title'];
     description = json['description'];
