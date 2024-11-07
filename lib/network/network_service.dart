@@ -26,7 +26,7 @@ class NetworkService {
       'Accept': 'application/json',
     };
     if (token != null) {
-      headers['token'] = "laksdjfpoiwaef;lkdf;l";
+      headers['token'] = token;
     }
     return headers;
   }

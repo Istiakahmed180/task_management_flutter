@@ -150,7 +150,7 @@ class _CreateNewTaskScreenState extends State<CreateNewTaskScreen> {
       isProgress = false;
       setState(() {});
       if (response.isSuccess) {
-        Navigator.pop(context);
+        Navigator.pop(context, true);
         clearTextFields();
         Fluttertoast.showToast(
             msg: "Task Create Complete", backgroundColor: AppColors.colorGreen);
