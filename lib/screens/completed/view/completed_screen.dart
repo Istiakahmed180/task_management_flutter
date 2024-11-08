@@ -7,7 +7,7 @@ import 'package:task_management/constants/api_path.dart';
 import 'package:task_management/constants/app_colors.dart';
 import 'package:task_management/network/network_response.dart';
 import 'package:task_management/network/network_service.dart';
-import 'package:task_management/screens/new_task/model/new_task_model.dart';
+import 'package:task_management/screens/new_task/model/task_model.dart';
 
 class CompletedScreen extends StatefulWidget {
   const CompletedScreen({super.key});
@@ -84,7 +84,7 @@ class _CompletedScreenState extends State<CompletedScreen> {
 
     return AppBackground(
         child: Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Visibility(
         visible: !_isCompletedTaskListProgress,
         replacement: const Center(

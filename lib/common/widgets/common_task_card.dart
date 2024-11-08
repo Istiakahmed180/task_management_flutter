@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:task_management/constants/app_colors.dart';
-import 'package:task_management/screens/new_task/model/new_task_model.dart';
+import 'package:task_management/screens/new_task/model/task_model.dart';
 
 class CommonTaskCard extends StatefulWidget {
   const CommonTaskCard({
@@ -27,6 +27,7 @@ class _CommonTaskCardState extends State<CommonTaskCard> {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       itemBuilder: (context, index) {
         final TaskData task = widget.taskList[index];
 

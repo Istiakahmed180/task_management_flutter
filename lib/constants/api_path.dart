@@ -13,6 +13,7 @@ class ApiPath {
 
   // Task API Path
   static const String createNewTask = "$_baseUrl/createTask";
+  static const String taskCount = "$_baseUrl/taskStatusCount";
   static const String newTaskList = "$_baseUrl/listTaskByStatus/New";
   static const String completeTaskList = "$_baseUrl/listTaskByStatus/Completed";
   static const String canceledTaskList = "$_baseUrl/listTaskByStatus/Canceled";
