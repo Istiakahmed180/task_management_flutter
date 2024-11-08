@@ -1,16 +1,73 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:task_management/common/widgets/app_background.dart';
 import 'package:task_management/config/routes/routes.dart';
+import 'package:task_management/constants/api_path.dart';
 import 'package:task_management/constants/app_colors.dart';
+import 'package:task_management/constants/app_strings.dart';
+import 'package:task_management/network/network_response.dart';
+import 'package:task_management/network/network_service.dart';
+import 'package:task_management/screens/forgot_password/view/pin_verification_screen.dart';
 
-class EmailAddressScreen extends StatelessWidget {
+class EmailAddressScreen extends StatefulWidget {
   const EmailAddressScreen({super.key});
+
+  @override
+  State<EmailAddressScreen> createState() => _EmailAddressScreenState();
+}
+
+class _EmailAddressScreenState extends State<EmailAddressScreen> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  bool isEmailVerification = false;
+  bool isProgress = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    setState(() {
+      isEmailVerification = formKey.currentState?.validate() ?? false;
+    });
+  }
+
+  void disposeTextFields() {
+    _emailController.dispose();
+  }
+
+  Future<void> emailVerification() async {
+    if (formKey.currentState!.validate()) {
+      isProgress = true;
+      setState(() {});
+      final email = _emailController.text.trim();
+
+      final NetworkResponse response = await NetworkService.getRequest(
+          context: context, url: ApiPath.emailAddressVerify(email));
+      isProgress = false;
+      setState(() {});
+      if (response.isSuccess) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PinVerificationScreen(email: email),
+            ));
+        Fluttertoast.showToast(
+            msg: response.requestResponse["data"],
+            backgroundColor: AppColors.colorGreen);
+      } else {
+        Fluttertoast.showToast(
+            msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     return AppBackground(
       child: SingleChildScrollView(
@@ -48,6 +105,48 @@ class EmailAddressScreen extends StatelessWidget {
       ),
     );
   }
+
+  Form _buildEmailAddressForm(
+    context,
+    GlobalKey<FormState> formKey,
+  ) {
+    return Form(
+      key: formKey,
+      child: Column(
+        children: [
+          TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(hintText: "Email"),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Please enter email address";
+                } else if (!RegExp(RegularExpression.email).hasMatch(value)) {
+                  return "Invalid email format";
+                }
+                return null;
+              }),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: isEmailVerification ? emailVerification : null,
+            child: isProgress
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: AppColors.colorWhite,
+                    ),
+                  )
+                : const Icon(
+                    Icons.arrow_circle_right_outlined,
+                    size: 30,
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 RichText _buildSignInSection(
@@ -71,37 +170,6 @@ RichText _buildSignInSection(
                     Routes.signIn,
                     (route) => false,
                   )),
-      ],
-    ),
-  );
-}
-
-Form _buildEmailAddressForm(
-  context,
-  GlobalKey<FormState> formKey,
-) {
-  return Form(
-    key: formKey,
-    child: Column(
-      children: [
-        TextFormField(
-            controller: TextEditingController(),
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(hintText: "Email"),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Please enter email address";
-              }
-              return null;
-            }),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () => Navigator.pushNamed(context, Routes.pinVerification),
-          child: const Icon(
-            Icons.arrow_circle_right_outlined,
-            size: 30,
-          ),
-        ),
       ],
     ),
   );

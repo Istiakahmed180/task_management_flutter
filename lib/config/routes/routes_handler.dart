@@ -8,8 +8,6 @@ Map<String, WidgetBuilder> routesHandler() {
     Routes.signIn: (context) => RoutesConfig.signInScreen,
     Routes.signUp: (context) => RoutesConfig.signUpScreen,
     Routes.emailAddress: (context) => RoutesConfig.emailAddressScreen,
-    Routes.pinVerification: (context) => RoutesConfig.pinVerificationScreen,
-    Routes.setPassword: (context) => RoutesConfig.setPasswordScreen,
     Routes.home: (context) => RoutesConfig.homeScreen,
     Routes.createNewTask: (context) => RoutesConfig.createNewTask,
     Routes.updateProfile: (context) => RoutesConfig.updateProfile,

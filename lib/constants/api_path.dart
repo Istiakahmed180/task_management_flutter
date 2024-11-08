@@ -5,8 +5,10 @@ class ApiPath {
   // Authentication API Path
   static const String registration = "$_baseUrl/Registration";
   static const String login = "$_baseUrl/Login";
-  static const String emailAddressVerify = "$_baseUrl/RecoverVerifyEmail";
-  static const String pinCodeVerify = "$_baseUrl/RecoverVerifyOTP";
+  static String emailAddressVerify(email) =>
+      "$_baseUrl/RecoverVerifyEmail/$email";
+  static String pinCodeVerify(email, otp) =>
+      "$_baseUrl/RecoverVerifyOtp/$email/$otp";
   static const String setPassword = "$_baseUrl/RecoverResetPassword";
 
   // Task API Path
