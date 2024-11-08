@@ -1,13 +1,14 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task_management/screens/sign_in/model/login_model.dart';
 
 class AuthController {
   final String _accessTokenKey = "access_token";
-  final String _email = "user_email";
-  final String _firstName = "user_first_name";
-  final String _lastName = "user_last_name";
+  final String _userDataKey = "user_data";
 
   static String? accessToken;
-  static Map<String, String>? userInfo;
+  static UserModel? userData;
 
   Future<void> saveAccessToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -15,12 +16,10 @@ class AuthController {
     accessToken = token;
   }
 
-  Future<void> saveUserInfo(
-      String email, String firstName, String lastName) async {
+  Future<void> saveUserInfo(UserModel userModel) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_email, email);
-    await prefs.setString(_firstName, firstName);
-    await prefs.setString(_lastName, lastName);
+    await prefs.setString(_userDataKey, jsonEncode(userModel.toJson()));
+    userData = userModel;
   }
 
   Future<String?> getAccessToken() async {
@@ -29,19 +28,15 @@ class AuthController {
     return accessToken;
   }
 
-  Future<Map<String, String>> getUserInfo() async {
+  Future<UserModel?> getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String email = prefs.getString(_email) ?? "";
-    String firstName = prefs.getString(_firstName) ?? "";
-    String lastName = prefs.getString(_lastName) ?? "";
-
-    Map<String, String> userInformation = {
-      "email": email,
-      "userName":
-          "${firstName.isNotEmpty ? firstName : ""} ${lastName.isNotEmpty ? lastName : ""}",
-    };
-
-    return userInfo = userInformation;
+    String? userEncodedData = prefs.getString(_userDataKey);
+    if (userEncodedData == null) {
+      return null;
+    }
+    UserModel userModel = UserModel.fromJson(jsonDecode(userEncodedData));
+    userData = userModel;
+    return userModel;
   }
 
   bool get isLoggedIn => accessToken != null;

@@ -10,6 +10,7 @@ import 'package:task_management/constants/app_colors.dart';
 import 'package:task_management/constants/app_strings.dart';
 import 'package:task_management/network/network_response.dart';
 import 'package:task_management/network/network_service.dart';
+import 'package:task_management/screens/sign_in/model/login_model.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -194,12 +195,10 @@ class _SignInScreenState extends State<SignInScreen> {
       isProgress = false;
       setState(() {});
       if (response.isSuccess) {
-        await _authController
-            .saveAccessToken(response.requestResponse["token"]);
-        await _authController.saveUserInfo(
-            response.requestResponse["data"]["email"],
-            response.requestResponse["data"]["firstName"],
-            response.requestResponse["data"]["lastName"]);
+        final LoginModel loginModel =
+            LoginModel.fromJson(response.requestResponse);
+        await _authController.saveAccessToken(loginModel.token!);
+        await _authController.saveUserInfo(loginModel.data!);
         Navigator.pushNamed(context, Routes.home);
         clearTextFields();
         Fluttertoast.showToast(

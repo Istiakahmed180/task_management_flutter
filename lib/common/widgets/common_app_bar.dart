@@ -17,17 +17,6 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _CommonAppBarState extends State<CommonAppBar> {
   final AuthController _authController = AuthController();
-  Map<String, String> userInformation = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _authController.getUserInfo().then((user) {
-      setState(() {
-        userInformation = user;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +26,12 @@ class _CommonAppBarState extends State<CommonAppBar> {
       backgroundColor: AppColors.colorGreen,
       title: ListTile(
         title: Text(
-          userInformation["userName"] ?? "User Name",
+          "${AuthController.userData!.firstName!.isNotEmpty ? AuthController.userData!.firstName! : ""} ${AuthController.userData!.lastName!.isNotEmpty ? AuthController.userData!.lastName! : ""}",
           style: textTheme.titleLarge
               ?.copyWith(color: AppColors.colorWhite, fontSize: 20),
         ),
         subtitle: Text(
-          userInformation["email"] ?? "user@example.com",
+          AuthController.userData!.email!,
           style: textTheme.titleSmall?.copyWith(
             color: AppColors.colorWhite,
             fontSize: 12,
