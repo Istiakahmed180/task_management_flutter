@@ -44,6 +44,23 @@ class _ProgressScreenState extends State<ProgressScreen> {
     }
   }
 
+  Future<void> _deleteProgressTaskList(String taskId) async {
+    _isProgressTaskListProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkService.getRequest(
+        context: context, url: ApiPath.deleteTask(taskId));
+    if (response.isSuccess) {
+      Fluttertoast.showToast(
+          msg: "Task Delete Complete", backgroundColor: AppColors.colorGreen);
+      _getProgressTaskList();
+    } else {
+      Fluttertoast.showToast(
+          msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+    }
+    _isProgressTaskListProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -60,7 +77,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
         ),
         child: _progressTaskList.isEmpty
             ? const NotFound(title: "Progress Task List Not Found")
-            : CommonTaskCard(taskList: _progressTaskList, textTheme: textTheme),
+            : CommonTaskCard(
+                taskList: _progressTaskList,
+                textTheme: textTheme,
+                onDelete: _deleteProgressTaskList,
+              ),
       ),
     ));
   }

@@ -44,6 +44,23 @@ class _CompletedScreenState extends State<CompletedScreen> {
     }
   }
 
+  Future<void> _deleteCompletedTaskList(String taskId) async {
+    _isCompletedTaskListProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkService.getRequest(
+        context: context, url: ApiPath.deleteTask(taskId));
+    if (response.isSuccess) {
+      Fluttertoast.showToast(
+          msg: "Task Delete Complete", backgroundColor: AppColors.colorGreen);
+      _getCompletedTaskList();
+    } else {
+      Fluttertoast.showToast(
+          msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+    }
+    _isCompletedTaskListProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -61,7 +78,10 @@ class _CompletedScreenState extends State<CompletedScreen> {
         child: _completedTaskList.isEmpty
             ? const NotFound(title: "Completed Task List Not Found")
             : CommonTaskCard(
-                taskList: _completedTaskList, textTheme: textTheme),
+                taskList: _completedTaskList,
+                textTheme: textTheme,
+                onDelete: _deleteCompletedTaskList,
+              ),
       ),
     ));
   }

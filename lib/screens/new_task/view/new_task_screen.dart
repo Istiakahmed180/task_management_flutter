@@ -41,8 +41,25 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       setState(() {});
     } else {
       Fluttertoast.showToast(
+          msg: response.errorMessage, backgroundColor: AppColors.colorGreen);
+    }
+  }
+
+  Future<void> _deleteNewTaskList(String taskId) async {
+    _isNewTaskListProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkService.getRequest(
+        context: context, url: ApiPath.deleteTask(taskId));
+    if (response.isSuccess) {
+      Fluttertoast.showToast(
+          msg: "Task Delete Complete", backgroundColor: AppColors.colorGreen);
+      _getNewTaskList();
+    } else {
+      Fluttertoast.showToast(
           msg: response.errorMessage, backgroundColor: AppColors.colorRed);
     }
+    _isNewTaskListProgress = false;
+    setState(() {});
   }
 
   Future<void> _goToNewTaskCreateScreen() async {
@@ -89,7 +106,11 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       child: Expanded(
         child: _newTaskList.isEmpty
             ? const NotFound(title: "New Task List Not Found")
-            : CommonTaskCard(taskList: _newTaskList, textTheme: textTheme),
+            : CommonTaskCard(
+                taskList: _newTaskList,
+                textTheme: textTheme,
+                onDelete: _deleteNewTaskList,
+              ),
       ),
     );
   }

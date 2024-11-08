@@ -37,12 +37,12 @@ class _CommonAppBarState extends State<CommonAppBar> {
       backgroundColor: AppColors.colorGreen,
       title: ListTile(
         title: Text(
-          userInformation["userName"]!,
+          userInformation["userName"] ?? "User Name",
           style: textTheme.titleLarge
               ?.copyWith(color: AppColors.colorWhite, fontSize: 20),
         ),
         subtitle: Text(
-          userInformation["email"]!,
+          userInformation["email"] ?? "user@example.com",
           style: textTheme.titleSmall?.copyWith(
             color: AppColors.colorWhite,
             fontSize: 12,

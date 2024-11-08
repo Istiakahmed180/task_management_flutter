@@ -44,6 +44,23 @@ class _CanceledScreenState extends State<CanceledScreen> {
     }
   }
 
+  Future<void> _deleteCanceledTaskList(String taskId) async {
+    _isCanceledTaskListProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkService.getRequest(
+        context: context, url: ApiPath.deleteTask(taskId));
+    if (response.isSuccess) {
+      Fluttertoast.showToast(
+          msg: "Task Delete Complete", backgroundColor: AppColors.colorGreen);
+      _getCanceledTaskList();
+    } else {
+      Fluttertoast.showToast(
+          msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+    }
+    _isCanceledTaskListProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -60,7 +77,11 @@ class _CanceledScreenState extends State<CanceledScreen> {
         ),
         child: _canceledTaskList.isEmpty
             ? const NotFound(title: "Canceled Task List Not Found")
-            : CommonTaskCard(taskList: _canceledTaskList, textTheme: textTheme),
+            : CommonTaskCard(
+                taskList: _canceledTaskList,
+                textTheme: textTheme,
+                onDelete: _deleteCanceledTaskList,
+              ),
       ),
     ));
   }
