@@ -61,6 +61,23 @@ class _CompletedScreenState extends State<CompletedScreen> {
     setState(() {});
   }
 
+  Future<void> _updateCompletedTaskList(String taskId, String status) async {
+    _isCompletedTaskListProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkService.getRequest(
+        context: context, url: ApiPath.updateTask(taskId, status));
+    if (response.isSuccess) {
+      Fluttertoast.showToast(
+          msg: "Task Update Complete", backgroundColor: AppColors.colorGreen);
+      _getCompletedTaskList();
+    } else {
+      Fluttertoast.showToast(
+          msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+    }
+    _isCompletedTaskListProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -81,6 +98,7 @@ class _CompletedScreenState extends State<CompletedScreen> {
                 taskList: _completedTaskList,
                 textTheme: textTheme,
                 onDelete: _deleteCompletedTaskList,
+                onUpdate: _updateCompletedTaskList,
               ),
       ),
     ));

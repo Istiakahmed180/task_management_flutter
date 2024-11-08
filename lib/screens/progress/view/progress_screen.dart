@@ -61,6 +61,23 @@ class _ProgressScreenState extends State<ProgressScreen> {
     setState(() {});
   }
 
+  Future<void> _updateProgressTaskList(String taskId, String status) async {
+    _isProgressTaskListProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkService.getRequest(
+        context: context, url: ApiPath.updateTask(taskId, status));
+    if (response.isSuccess) {
+      Fluttertoast.showToast(
+          msg: "Task Update Complete", backgroundColor: AppColors.colorGreen);
+      _getProgressTaskList();
+    } else {
+      Fluttertoast.showToast(
+          msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+    }
+    _isProgressTaskListProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -81,6 +98,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 taskList: _progressTaskList,
                 textTheme: textTheme,
                 onDelete: _deleteProgressTaskList,
+                onUpdate: _updateProgressTaskList,
               ),
       ),
     ));

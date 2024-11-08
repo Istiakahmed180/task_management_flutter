@@ -61,6 +61,23 @@ class _CanceledScreenState extends State<CanceledScreen> {
     setState(() {});
   }
 
+  Future<void> _updateCanceledTaskList(String taskId, String status) async {
+    _isCanceledTaskListProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkService.getRequest(
+        context: context, url: ApiPath.updateTask(taskId, status));
+    if (response.isSuccess) {
+      Fluttertoast.showToast(
+          msg: "Task Update Complete", backgroundColor: AppColors.colorGreen);
+      _getCanceledTaskList();
+    } else {
+      Fluttertoast.showToast(
+          msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+    }
+    _isCanceledTaskListProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -81,6 +98,7 @@ class _CanceledScreenState extends State<CanceledScreen> {
                 taskList: _canceledTaskList,
                 textTheme: textTheme,
                 onDelete: _deleteCanceledTaskList,
+                onUpdate: _updateCanceledTaskList,
               ),
       ),
     ));

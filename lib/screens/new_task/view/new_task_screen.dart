@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:task_management/common/widgets/app_background.dart';
+import 'package:task_management/common/widgets/common_floatin_action_button.dart';
 import 'package:task_management/common/widgets/common_task_card.dart';
 import 'package:task_management/common/widgets/not_found.dart';
 import 'package:task_management/config/routes/routes.dart';
@@ -62,7 +63,24 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     setState(() {});
   }
 
-  Future<void> _goToNewTaskCreateScreen() async {
+  Future<void> _updateNewTaskList(String taskId, String status) async {
+    _isNewTaskListProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkService.getRequest(
+        context: context, url: ApiPath.updateTask(taskId, status));
+    if (response.isSuccess) {
+      Fluttertoast.showToast(
+          msg: "Task Update Complete", backgroundColor: AppColors.colorGreen);
+      _getNewTaskList();
+    } else {
+      Fluttertoast.showToast(
+          msg: response.errorMessage, backgroundColor: AppColors.colorRed);
+    }
+    _isNewTaskListProgress = false;
+    setState(() {});
+  }
+
+  Future<void> _goToTaskCreateScreen() async {
     final result = await Navigator.pushNamed(context, Routes.createNewTask);
     if (result == true) {
       _getNewTaskList();
@@ -87,8 +105,8 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
           ],
         ),
       )),
-      floatingActionButton: BuildCreateNewTaskFlotButton(
-        goToNewTaskCreateScreen: _goToNewTaskCreateScreen,
+      floatingActionButton: CommonFloatingActionButton(
+        goToTaskCreateScreen: _goToTaskCreateScreen,
       ),
     );
   }
@@ -110,6 +128,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 taskList: _newTaskList,
                 textTheme: textTheme,
                 onDelete: _deleteNewTaskList,
+                onUpdate: _updateNewTaskList,
               ),
       ),
     );
@@ -176,28 +195,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
             )
           ],
         ),
-      ),
-    );
-  }
-}
-
-class BuildCreateNewTaskFlotButton extends StatelessWidget {
-  final Function goToNewTaskCreateScreen;
-
-  const BuildCreateNewTaskFlotButton({
-    super.key,
-    required this.goToNewTaskCreateScreen,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-      onPressed: () => goToNewTaskCreateScreen(),
-      backgroundColor: AppColors.colorGreen,
-      child: const Icon(
-        Icons.add,
-        color: AppColors.colorWhite,
       ),
     );
   }

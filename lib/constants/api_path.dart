@@ -18,4 +18,6 @@ class ApiPath {
   static const String canceledTaskList = "$_baseUrl/listTaskByStatus/Canceled";
   static const String progressTaskList = "$_baseUrl/listTaskByStatus/Progress";
   static String deleteTask(taskId) => "$_baseUrl/deleteTask/$taskId";
+  static String updateTask(taskId, status) =>
+      "$_baseUrl/updateTaskStatus/$taskId/$status";
 }
