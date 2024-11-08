@@ -1,14 +1,13 @@
-import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:task_management/screens/sign_in/model/login_model.dart';
 
 class AuthController {
   final String _accessTokenKey = "access_token";
-  final String _userDataKey = "user_data";
+  final String _emailKey = "user_email";
+  final String _firstNameKey = "user_first_name";
+  final String _lastNameKey = "user_last_name";
 
   static String? accessToken;
-  static UserModel? userData;
+  static Map<String, String>? userInfo;
 
   Future<void> saveAccessToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -16,10 +15,12 @@ class AuthController {
     accessToken = token;
   }
 
-  Future<void> saveUserInfo(UserModel userModel) async {
+  Future<void> saveUserInfo(
+      String email, String firstName, String lastName) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userDataKey, jsonEncode(userModel.toJson()));
-    userData = userModel;
+    await prefs.setString(_emailKey, email);
+    await prefs.setString(_firstNameKey, firstName);
+    await prefs.setString(_lastNameKey, lastName);
   }
 
   Future<String?> getAccessToken() async {
@@ -28,15 +29,19 @@ class AuthController {
     return accessToken;
   }
 
-  Future<UserModel?> getUserInfo() async {
+  Future<Map<String, String>> getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userEncodedData = prefs.getString(_userDataKey);
-    if (userEncodedData == null) {
-      return null;
-    }
-    UserModel userModel = UserModel.fromJson(jsonDecode(userEncodedData));
-    userData = userModel;
-    return userModel;
+    String email = prefs.getString(_emailKey) ?? "";
+    String firstName = prefs.getString(_firstNameKey) ?? "";
+    String lastName = prefs.getString(_lastNameKey) ?? "";
+
+    Map<String, String> userInformation = {
+      "email": email,
+      "userName":
+          "${firstName.isNotEmpty ? firstName : ""} ${lastName.isNotEmpty ? lastName : ""}",
+    };
+
+    return userInfo = userInformation;
   }
 
   bool get isLoggedIn => accessToken != null;
