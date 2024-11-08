@@ -196,6 +196,10 @@ class _SignInScreenState extends State<SignInScreen> {
       if (response.isSuccess) {
         await _authController
             .saveAccessToken(response.requestResponse["token"]);
+        await _authController.saveUserInfo(
+            response.requestResponse["data"]["email"],
+            response.requestResponse["data"]["firstName"],
+            response.requestResponse["data"]["lastName"]);
         Navigator.pushNamed(context, Routes.home);
         clearTextFields();
         Fluttertoast.showToast(
